@@ -3,11 +3,11 @@
 from turtle import up
 import uuid
 from datetime import datetime
-from sqlalchemy import *
+from sqlalchemy import declarative_base, Column, String, DateTime
 
 Base = declarative_base()
 
-class BaseModel:
+class BaseModel(Base):
     """A base class for all hbnb models"""
     def __init__(self, *args, **kwargs):
         """Instatntiates a new model"""
