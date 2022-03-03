@@ -23,12 +23,15 @@ class User(BaseModel, Base):
 
 =======
 <<<<<<< HEAD
+<<<<<<< HEAD
     first_name = Column(String(128), nullable=True)
     last_name = Column(String(128), nullable=True)
 
     places = relationship('Places', backref='user', cascade='all')
 >>>>>>> 23930bb2b4653485181bdb5643d77ce988e6e53f
 =======
+=======
+>>>>>>> parent of 9f2cbb7... confirm changes
 from sqlalchemy import Column, String
 
 
@@ -40,4 +43,7 @@ class User(BaseModel, Base):
     first_name = Column(String(128), nullable=True)
     last_name = Column(String(128), nullable=True)
 >>>>>>> 168a0ba9cb1e28b9d47a30884a73d0e53bbb58a8
+<<<<<<< HEAD
+>>>>>>> parent of 9f2cbb7... confirm changes
+=======
 >>>>>>> parent of 9f2cbb7... confirm changes
