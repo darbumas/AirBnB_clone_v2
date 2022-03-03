@@ -2,13 +2,18 @@
 
 from multiprocessing import pool
 import os
-from models.base_model import Base
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, scoped_session, relationship, backref
+from sqlalchemy.orm import scoped_session, sessionmaker
+from models.base_model import Base
+import models
+from models.city import City
+from models.state import State
+from models.user import User
+from models.place import Place
+from models.review import Review
+# from models.amenity import Amenity
 
-
-
-
+class_list = [City, State, User, Place, Review]
 
 class DBStorage:
     __engine = None
@@ -23,58 +28,60 @@ class DBStorage:
         PASS = os.environ.get('HBNB_MYSQL_PWD')
         HOST = os.environ.get('HBNB_MYSQL_HOST')
         DB = os.environ.get('HBNB_MYSQL_DB')
-        self.__engine = create_engine('{}+{}://{}:{}@{}/{}'
-                                        .format(DIAL, DRIVER, USER, PASS, HOST, DB), pool_pre_ping=True)
-        env = os.getenv('HBNB_ENV', 'development')
-        if env == 'test':
+        self.__engine = create_engine('{}+{}://{}:{}@{}/{}'.format(DIAL, DRIVER, USER, PASS, HOST, DB),
+                                      pool_pre_ping=True)
+        if os.getenv('HBNB_ENV') == 'test':
             Base.metadata.drop_all(self.__engine)
-        Base.metadata.create_all(self.__engine)
-        self.Session = scoped_session(sessionmaker(bind=self.__engine, expire_on_commit=False))
-        self.session = self.Session()
-        self.classes = Base.__subclasses__()
-
-    def get(self, cls, id):
-        """
-        Returns an object based on the class name and id
-        """
-        return self.session.query(cls).filter_by(id=id).first()
 
     def all(self, cls=None):
         """
-        Returns all objects depending on the class name
+        returns a dictionary of all objects
         """
-        if cls is not None:
-            obj = self.session.query(cls).all()
+        if cls:
+            objs = self.__session.query(cls).all()
+            for obj in objs:
+                obj.reload()
+            return objs
         else:
-            obj = self.session.query(self.classes).all()
-        return obj
+            objs = {}
+            for c in class_list:
+                objs[c.__name__] = self.all(c)
+            return objs
 
     def new(self, obj):
         """
-        Adds new object to storage
+        adds object to current database session
         """
-        self.session.add(obj)
+        self.__session.add(obj)
 
     def save(self):
         """
-        Commits all changes
+        commits all changes of current database session
         """
-        self.session.commit()
+        self.__session.commit()
 
     def delete(self, obj=None):
         """
-        Deletes object from storage
+        deletes obj from current database session if not None
         """
-        self.session.delete(obj)
+        if obj:
+            self.__session.delete(obj)
+            self.save()
 
     def reload(self):
         """
-        Reloads all objects from storage
+        reloads the database session
         """
-        self.session = self.Session()
+        from models.base_model import Base
+        Base.metadata.create_all(self.__engine)
+        sess_factory = sessionmaker(bind=self.__engine, expire_on_commit=False)
+        Session = scoped_session(sess_factory)
+        self.__session = Session()
 
     def close(self):
         """
-        Closes the session
+        calls remove() on private sessionmaker object
         """
-        self.session.close()
+        self.__session.remove()
+
+
