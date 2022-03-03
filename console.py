@@ -70,38 +70,30 @@ class HBNBCommand(cmd.Cmd):
 
     def do_create(self, args):
         """ Creates a new instance of a class """
-        new = args.partition(" ")
-        c_name = new[0]
-        c_id = new[2]
-
-        # guard against trailing args
-        if c_id and ' ' in c_id:
-            c_id = c_id.partition(' ')[0]
-
-        if not c_name:
-            print("** class name missing **")
-            return
-
-        if c_name not in HBNBCommand.classes:
+        args = args.split(' ')
+        if args[0] not in HBNBCommand.classes:
             print("** class doesn't exist **")
             return
-
-        if not c_id:
-            print("** instance id missing **")
-            return
-
-        key = c_name + "." + c_id
-        try:
-            storage._FileStorage__objects[key]
-            print("** duplicate id **")
-            return
-        except KeyError:
-            pass
-
-        # create instance of class
-        new_obj = HBNBCommand.classes[c_name](c_id)
+        new_obj = HBNBCommand.classes[args[0]]()
+        while len(args) > 1:
+            key = args[0]
+            value = args[1]
+            if key in HBNBCommand.types:
+                value = HBNBCommand.types[key](value)
+            setattr(new_obj, key, value)
+            args = args[2:]
+            if '\"' in value:
+                value = value.replace('_', ' ')
+            elif '.' in value:
+                value = float(value)
+            else:
+                value = int(value)
+            if sys.__stdin__.isatty():
+                print(new_obj.id)
+        storage.all()[new_obj.id] = new_obj
+        storage.save()
         print(new_obj.id)
-        new_obj.save()
+        storage.save()
 
     def help_create(self):
         """ Help information for the create method """
