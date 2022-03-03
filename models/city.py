@@ -6,10 +6,6 @@ from os import environ
 from sqlalchemy import Column, String, Integer, DateTime, ForeignKey
 from sqlalchemy.orm import relationship
 
-<<<<<<< HEAD
-=======
-
->>>>>>> 168a0ba9cb1e28b9d47a30884a73d0e53bbb58a8
 class City(BaseModel, Base):
     """ The city class, contains state ID and name """
     __tablename__ = 'cities'
