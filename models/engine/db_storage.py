@@ -2,7 +2,9 @@
 
 from multiprocessing import pool
 import os
-from sqlalchemy import scoped_session, create_engine, MetaData, sessionmaker
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker, scoped_session, relationship, backref
+
 
 HBNB_MYSQL_USER = os.environ.get('HBNB_MYSQL_USER')
 HBNB_MYSQL_PWD = os.environ.get('HBNB_MYSQL_PWD')
