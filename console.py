@@ -115,35 +115,28 @@ class HBNBCommand(cmd.Cmd):
 
     def do_create(self, args):
         """ Create an object of any class"""
-        i = 0
-        arguments = args.split(" ")
-        if not arguments:
+        args = args.split(' ')
+        if not args[0]:
             print("** class name missing **")
             return
-        elif arguments[0] not in HBNBCommand.classes:
+        elif args[0] not in HBNBCommand.classes.keys():
             print("** class doesn't exist **")
             return
-        new_instance = HBNBCommand.classes[arguments[0]]()
-        if len(arguments) > 1:
-            for arg in arguments[1:]:
-                if i % 2 == 0:
-                    key = arg
-                else:
-                    new_instance.__dict__[key] = arg
-                i += 1
-            if '=' in new_instance.__dict__:
-                del new_instance.__dict__['=']
-            elif '.' in arg[1]:
-                type_arg = float(type_arg[1])
-                setattr(new_instance, key, type_arg)
-            elif arg[1].lstrip('-').isdigit() is True:
-                arg[1] = int(arg[1])
-                setattr(new_instance, key, arg[1])
-            else:
-                setattr(new_instance, key, arg[1])
-
-        new_instance.save()
-        print(new_instance.id)
+        my_dict = {}
+        _instance = HBNBCommand.classes[args[0]]()
+        if len(args) > 1 and '=' in args[1]:
+            res = []
+            for item in args[1:]:
+                if '=' in item:
+                    item = item.replace("\"", "")
+                    res.append(map(str.strip, item.split('=', 1)))
+            my_dict = dict(res)
+            for k, v in my_dict.items():
+                if "_" in my_dict[k]:
+                    my_dict[k] = my_dict[k].replace("_", " ")
+                setattr(_instance, k, my_dict[k])
+        print(_instance.id)
+        _instance.save()
 
     def help_create(self):
         """ Help information for the create method """
