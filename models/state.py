@@ -7,13 +7,14 @@ from models.city import City
 import os
 
 
-
 class State(BaseModel, Base):
     """ State class """
     __tablename__ = "states"
     if os.getenv('HBNB_TYPE_STORAGE') == 'db':
         name = Column(String(128), nullable=False)
-        cities = relationship('City', backref='states', cascade='all, delete-orphan')
+        cities = relationship(
+            'City', backref='states',
+            cascade='all, delete-orphan')
     else:
         name = ""
         cities = []
