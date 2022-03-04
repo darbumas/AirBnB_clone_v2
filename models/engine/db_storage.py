@@ -36,16 +36,13 @@ class DBStorage:
         """
         returns a dictionary of all objects
         """
-        if cls:
-            objs = self.__session.query(cls).all()
-            for obj in objs:
-                obj.reload()
-            return objs
+        if cls is None:
+            classes = class_list
         else:
-            objs = {}
-            for c in class_list:
-                objs[c.__name__] = self.all(c)
-            return objs
+            if type(cls) == str:
+                cls = eval(cls)
+            objs = self.__session.query(cls)
+        return {"{}.{}".format(type(o).__name__, o.id): o for o in objs}
 
     def new(self, obj):
         """
