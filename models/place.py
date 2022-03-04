@@ -1,17 +1,16 @@
 #!/usr/bin/python3
 """ Place Module for HBNB project """
 from models.base_model import BaseModel, Base
-from sqlalchemy import Column, String, Integer, ForeignKey, DateTime, \
-    Float, Table, MetaData
+from sqlalchemy import Column, String, Integer, Float, Table, MetaData
+from sqlalchemy.sql.schema import ForeignKey
 from sqlalchemy.orm import relationship
-import os
 
 metadata = MetaData()
 place_amenity = Table('place_amenity', metadata,
-        Column('place_id', String(60), ForeignKey('amenity_id'), PrimaryKey=True,
+        Column('place_id', String(60), ForeignKey('amenity_id'), primary_key=True,
                nullable=False),
                
-        Column('amenity_id', String(60), ForeignKey('place_id'), nullable=False))
+        Column('amenity_id', String(60), ForeignKey('place_id'), nullable=False, primary_key=True))
 
 
 class Place(BaseModel, Base):
