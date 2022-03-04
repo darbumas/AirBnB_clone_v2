@@ -1,28 +1,26 @@
 #!/usr/bin/python3
 """ Place Module for HBNB project """
-from models.base_model import BaseModel, Base
-from sqlalchemy import Column, String, Integer, Float, Table, MetaData
-from sqlalchemy.sql.schema import ForeignKey
 from sqlalchemy.orm import relationship
+from sqlalchemy.sql.schema import ForeignKey
+from models.base_model import Base, BaseModel
+from sqlalchemy import Column, Integer, String, Float, Table
 
-metadata = MetaData()
-place_amenity = Table(
-    'place_amenity',
-    metadata,
-    Column('place_id', String(60),
-           ForeignKey('amenity_id'),
-           primary_key=True, nullable=False),
 
-    Column('amenity_id', String(60),
-           ForeignKey('place_id'),
-           nullable=False, primary_key=True))
+place_amenity = Table('place_amenity', Base.metadata,
+                      Column('place_id', String(60),
+                             ForeignKey('places.id'),
+                             primary_key=True),
+                      Column('amenity_id', String(60),
+                             ForeignKey('amenities.id'),
+                             primary_key=True))
 
 
 class Place(BaseModel, Base):
-    """ Place class handles all application places """
-    __tablename__ = "places"
-    city_id = Column(String(60), ForeignKey("cities.id"), nullable=False)
-    user_id = Column(String(60), ForeignKey("users.id"), nullable=False)
+    """ A place to stay """
+    __tablename__ = 'places'
+
+    city_id = Column(String(60), ForeignKey('cities.id'), nullable=False)
+    user_id = Column(String(60), ForeignKey('users.id'), nullable=False)
     name = Column(String(128), nullable=False)
     description = Column(String(1024))
     number_rooms = Column(Integer, nullable=False, default=0)
@@ -31,26 +29,22 @@ class Place(BaseModel, Base):
     price_by_night = Column(Integer, nullable=False, default=0)
     latitude = Column(Float)
     longitude = Column(Float)
-    reviews = relationship("Review", backref="place", cascade="all")
-    amenities = relationship("Amenity", secondary="place_amenity",
-                             viewonly=False)
+    reviews = relationship("Review", backref="place")
+    amenities = relationship("Amenity", secondary='place_amenity',
+                             viewonly=False, backref='place_amenities')
     amenity_ids = []
 
     @property
-    def reviews(self):
-        """Getter returns Review instances with 'place_id'"""
-        my_list = []
-        for place in storage.all(Review).values():
-            if place.id == self.place_id:
-                my_list.append(place)
-        return my_list
-
-    @property
     def amenities(self):
-        """Getter for amenities_id"""
+        """returns list of amentity ids"""
         return self.amenity_ids
 
     @amenities.setter
     def amenities(self, val):
-        """Setter for amenities"""
-        amenity_ids.append(val)
+        """appends to amenity_id list"""
+        self.amenity_id.append(val)
+
+    @property
+    def reviews(self):
+        """returns list of revies with shared pace_ids"""
+        return self.reviews
