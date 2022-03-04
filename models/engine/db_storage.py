@@ -10,9 +10,9 @@ from models.state import State
 from models.user import User
 from models.place import Place
 from models.review import Review
-# from models.amenity import Amenity
+from models.amenity import Amenity
 
-class_list = [City, State, User, Place, Review]
+class_list = [City, State, User, Place, Review, Amenity]
 
 class DBStorage:
     __engine = None
@@ -71,11 +71,10 @@ class DBStorage:
         """
         reloads the database session
         """
-        from models.base_model import Base
         Base.metadata.create_all(self.__engine)
-        sess_factory = sessionmaker(bind=self.__engine, expire_on_commit=False)
-        Session = scoped_session(sess_factory)
-        self.__session = Session()
+        self.__session = scoped_session(sessionmaker(bind=self.__engine, expire_on_commit=False))
+
+
 
     def close(self):
         """
