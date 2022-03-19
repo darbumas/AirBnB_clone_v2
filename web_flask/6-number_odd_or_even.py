@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 '''
-starts a Flask web web_flasklication
+starts a Flask web web_flask
 '''
 
 from flask import render_template
